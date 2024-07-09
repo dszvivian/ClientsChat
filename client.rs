@@ -44,3 +44,6 @@ fn main() {
     }
 
 }
+
+// since we have to continuously read and continously write 
+// I Used a separate thread for both write and read

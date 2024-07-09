@@ -56,7 +56,6 @@ fn private_message(sender_id:  usize, message: &[u8],clients: &mut Vec<(usize, T
 
     for (cid,client) in clients.iter_mut(){
         if *cid == sender_id {
-
             println!("cid={} === recieving_id{}",*cid , sender_id);
             client.write_all(message).unwrap();
         }
