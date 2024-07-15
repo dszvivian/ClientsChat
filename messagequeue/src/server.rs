@@ -1,7 +1,7 @@
 pub mod server{
 
     use std::{collections::HashMap, io::{BufRead, BufReader, Error, Read, Write}, net::{TcpListener, TcpStream}, sync::{Arc, Mutex},thread};
-    use crate::queue::{queue::{new_queue, Queue}};
+    use crate::queue::{self, queue::{new_queue, Queue}};
 
 
     // Whenever a new client joins the Stream, His TcpStream along with Client_id will be stored in **clients** Vector
@@ -64,35 +64,48 @@ pub mod server{
     //client handler --> handling a single connection
     fn handle_connection(queues: &mut Arc<Mutex<Queue>>,clients:&mut Arc<Mutex<HashMap<usize,TcpStream>>>,mut stream: TcpStream){
 
-        //ie:: Buffreader is used when we are reading something from Stream like Network stream, Files
-        // This reduces System Calls
-        let mut buffer = [0;512];
-        let mut reader = BufReader::new(&mut stream);
-        reader.read(&mut buffer).unwrap();
+        loop{
+            //ie:: Buffreader is used when we are reading something from Stream like Network stream, Files
+            // This reduces System Calls
+            let mut buffer = [0;512];
+            let mut reader = BufReader::new(&mut stream);
+            reader.read(&mut buffer).unwrap();
 
-        //converts the bytes of Stream from utf8 into readable String
-        let request = String::from_utf8_lossy(&buffer).to_string();
+            //converts the bytes of Stream from utf8 into readable String
+            let request = String::from_utf8_lossy(&buffer).to_string();
 
 
-        //supports only one operation: send{client_id} message
+            //supports only one operation: send{client_id} message
 
-        // extract operation and message from the stream
-        let (operation, message) = extract_request(&request);
+            // extract operation and message from the stream
+            let (operation, message) = extract_request(&request);
 
-        if operation.starts_with("send:"){
-            let client_id:usize = operation[5..6].parse().unwrap();
+            if operation.starts_with("send:"){
+                let client_id:usize = operation[5..].parse().unwrap();
 
-            let mut queue_ref = queues.lock().unwrap();
-            queue_ref.add_message(message.to_string());
 
-            let mut clients_ref = Arc::clone(&clients);
+                println!("This Print Works");
 
-            // write to that particular TcpStream
-            send_private_message(&client_id,message.to_string(),&mut clients_ref);
-            return;
+                let mut queue_ref = queues.lock().unwrap();
+                queue_ref.add_message(message.to_string());
+
+                let mut clients_ref = Arc::clone(&clients);
+
+                // write to that particular TcpStream
+                send_private_message(&client_id,message.to_string(),&mut clients_ref);
+                // return;
+            }
+
+            if operation.starts_with("getallmessagesinqueue"){
+                println!("this should work");
+                let mut queue_ref = queues.lock().unwrap();
+                queue_ref.retrive_message();
+                // return;
+            }
+
         }
 
-        println!("Invalid Opearation! Try again");
+        // println!("Invalid Opearation! Try again");
     }
 
     fn extract_request(s:&str) -> (&str,&str){

@@ -23,13 +23,17 @@ pub mod queue{
 
 
         //pop a message from queue
-        pub fn retrive_message(&mut self) -> String {
+        pub fn retrive_message(&mut self) {
 
-            if self.queue.is_empty(){
-                return String::new();
+            // if self.queue.is_empty(){
+            //     return String::new();
+            // }
+
+            // return self.queue.pop_back().unwrap();
+
+            for elem in &self.queue{
+                print!("{} ",elem);
             }
-
-            return self.queue.pop_back().unwrap();
         }
 
     }
