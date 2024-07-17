@@ -16,6 +16,30 @@ rustc client.rs && ./client
 ```
 
 
+## Features 
+
+- Communicate b/w different Clients 
+
+
+## Commands -- clients side 
+
+send private message to another client
+`
+send:{client_id} message
+`
+
+getallmessages  -- messages will be displayed in the server
+`
+getallmessages
+`
+
+quit
+`
+quit
+`
+
+
+
 
 
 ## Different ways to establish Multithreaded Communication:
