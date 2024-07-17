@@ -25,7 +25,7 @@ rustc client.rs && ./client
 
 send private message to another client
 `
-send:{client_id} message
+send:client_id message
 `
 
 getallmessages  -- messages will be displayed in the server
